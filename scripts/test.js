@@ -36,8 +36,8 @@ async function startRafflux() {
     1,
     1,
     nftContractAddress,
-    hre.ethers.utils.parseEther("1"),
-    { value: hre.ethers.utils.parseEther("1") }
+    hre.ethers.utils.parseEther("0.02"),
+    { value: hre.ethers.utils.parseEther("0.02") }
   );
 }
 
