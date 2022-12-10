@@ -19,7 +19,7 @@ contract Rafflux is RaffluxStorage {
     }
     //launcher 
     constructor() {
-        owner = payable(msg.sender);
+        owner = msg.sender;
     }
 
     function _transferFromSeller(assetType _type, address _seller, uint256 _assetID) internal{
@@ -34,7 +34,7 @@ contract Rafflux is RaffluxStorage {
 
     function createRaffle(assetType _type, uint _id, address _contractAddr, uint _participateFee) public payable{
         require(msg.value == raffleSellersEntryFee, "insufficient funds");
-        erc721contractAddr = _contractAddr;
+        erc721contract = IERC721(_contractAddr);
         minRaffleParticipationFee = _participateFee;
         _transferFromSeller(_type, msg.sender, _id);
     }

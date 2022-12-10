@@ -21,13 +21,13 @@ async function startRafflux() {
   await rafDeployed.deployed();
   console.log("Deployed Contract Address :" + (await rafDeployed.address));
 
-  const contractbal = await hre.ethers.provider.getBalance(rafDeployed.address);
-
-  console.log("Contract Balance: ", hre.ethers.utils.formatEther(contractbal));
+  await deployedContract
+    .connect(randSigner)
+    .setApprovalForAll(rafDeployed.address, true);
 
   var rafSigner = await rafDeployed.connect(randSigner);
   let transfrItem = await rafSigner.createRaffle(
-    1,
+    0,
     1,
     nftContractAddress,
     hre.ethers.utils.parseEther("0.02"),
