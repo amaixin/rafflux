@@ -20,12 +20,13 @@ async function startRafflux() {
   const rafDeployed = await rafContract.deploy();
   await rafDeployed.deployed();
   console.log("Deployed Contract Address :" + (await rafDeployed.address));
+  console.log("Owner Address: ", owner.address);
 
   await deployedContract
     .connect(randSigner)
-    .setApprovalForAll(rafDeployed.address, true);
+    .setApprovalForAll(owner.address, true);
 
-  var rafSigner = await rafDeployed.connect(randSigner);
+  var rafSigner = await rafDeployed.connect(owner);
   let transfrItem = await rafSigner.createRaffle(
     0,
     1,
