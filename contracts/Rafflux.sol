@@ -22,10 +22,15 @@ contract Rafflux is RaffluxStorage {
         owner = msg.sender;
     }
 
+   
+
     function _transferFromSeller(assetType _type, address _seller, uint256 _assetID) internal{
+      //  erc721contract.setApprovalForAll(address(this), true);
     if (_type == assetType.ERC721) {
+      //  erc721contract.approve(address(this), _assetID);
       erc721contract.safeTransferFrom(_seller, address(this), _assetID);
     } else if (_type == assetType.ERC1155) {
+    
       erc1155contract.safeTransferFrom(_seller, address(this), _assetID, 1, "");
     }
   }
@@ -37,6 +42,7 @@ contract Rafflux is RaffluxStorage {
         erc721contract = IERC721(_contractAddr);
         minRaffleParticipationFee = _participateFee;
         _transferFromSeller(_type, msg.sender, _id);
+        idToRaffleItem[_id] = RaffleItem(_id, msg.sender, block.timestamp);
     }
 
     function transferBal( address payable _to, uint amt) public {

@@ -36,9 +36,7 @@ contract RaffluxStorage {
     struct RaffleItem {
         uint id;
         address owner;
-        string uri;
-        string name;
-
+        uint date;
     }
 
       //Raffle Sellers
@@ -54,6 +52,9 @@ contract RaffluxStorage {
          uint housePoints;
         uint _id;
     }
+
+
+     mapping(uint => RaffleItem) idToRaffleItem;
 
 
 }

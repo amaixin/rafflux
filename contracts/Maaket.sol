@@ -72,7 +72,7 @@ contract Maaket is ERC721URIStorage {
 
     function createListedToken(uint256 id, uint256 price) private {
         listedItem[id] = ItemData(id, payable(address(this)), payable(msg.sender), price,  true);
-        _transfer(msg.sender, address(this), id);
+        // _transfer(msg.sender, address(this), id);
 
     }
 
