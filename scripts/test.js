@@ -43,7 +43,7 @@ async function startRafflux() {
       hre.ethers.utils.parseEther("0.02"),
       { value: hre.ethers.utils.parseEther("0.02") }
     );
-  console.log("Ticket Created: ", crRaffle);
+  console.log("Ticket Created: ", crRaffle.to);
 }
 
 async function runDeployer() {

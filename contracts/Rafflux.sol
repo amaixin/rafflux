@@ -6,12 +6,14 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "hardhat/console.sol";
 import "./RaffluxStorage.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
-contract Rafflux is RaffluxStorage {
-  
+contract Rafflux is RaffluxStorage, IERC721Receiver {
   address public erc721contractAddr;
   IERC721 erc721contract = IERC721(erc721contractAddr);
   IERC1155 erc1155contract = IERC1155(erc721contractAddr);
+  ERC721 token;
 
     enum assetType {
         ERC721,
@@ -25,12 +27,9 @@ contract Rafflux is RaffluxStorage {
    
 
     function _transferFromSeller(assetType _type, address _seller, uint256 _assetID) internal{
-      //  erc721contract.setApprovalForAll(address(this), true);
     if (_type == assetType.ERC721) {
-      //  erc721contract.approve(address(this), _assetID);
       erc721contract.safeTransferFrom(_seller, address(this), _assetID);
-    } else if (_type == assetType.ERC1155) {
-    
+    } else if (_type == assetType.ERC1155) { 
       erc1155contract.safeTransferFrom(_seller, address(this), _assetID, 1, "");
     }
   }
@@ -45,6 +44,10 @@ contract Rafflux is RaffluxStorage {
         idToRaffleItem[_id] = RaffleItem(_id, msg.sender, block.timestamp);
     }
 
+    function onERC721Received( address operator, address from, uint256 tokenId, bytes calldata data ) public override returns (bytes4) {
+            return this.onERC721Received.selector;
+        }
+        
     function transferBal( address payable _to, uint amt) public {
          _to.transfer(amt);
     }

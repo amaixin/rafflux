@@ -37,6 +37,7 @@ contract RaffluxStorage {
         uint id;
         address owner;
         uint date;
+       
     }
 
       //Raffle Sellers
