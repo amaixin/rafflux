@@ -6,19 +6,34 @@ async function startRafflux() {
   //Deploy ERC1155 contract
   const erc1155Con = await hre.ethers.getContractFactory("MaaketErc1155");
   const erc1155Deployed = await erc1155Con.deploy();
-  const initNft = await erc1155Deployed.createNft();
+
+  //Maaket ERC11155 Contract Address
+  const erc1155MaaketAddr = await erc1155Deployed.address;
+
+  const initNft = await erc1155Deployed
+    .connect(randSigner)
+    .createNft({ value: hre.ethers.utils.parseEther("0.02") });
 
   await initNft.wait();
-  console.log("Erc1155 Contract: ", await erc1155Deployed.address);
+
+  console.log("Erc1155 Contract: ", erc1155MaaketAddr);
+
   console.log(
-    "Balance of Deployer: ",
+    "Balance of Deployer (aka token owner): ",
     hre.ethers.BigNumber.isBigNumber(
-      await erc1155Deployed.balanceOf(owner.address, 0)
+      await erc1155Deployed.balanceOf(randSigner.address, 0)
     ),
-    await erc1155Deployed.balanceOf(owner.address, 0),
+    await erc1155Deployed.balanceOf(randSigner.address, 0),
     " It is, but converted to a number, which is: ",
     hre.ethers.BigNumber.from(
-      await erc1155Deployed.balanceOf(owner.address, 0)
+      await erc1155Deployed.balanceOf(randSigner.address, 0)
+    ).toNumber()
+  );
+
+  console.log(
+    "Balance of ERC1155 Maaket contract address: ",
+    hre.ethers.BigNumber.from(
+      await erc1155Deployed.balanceOf(erc1155MaaketAddr, 0)
     ).toNumber()
   );
 
@@ -47,12 +62,17 @@ async function startRafflux() {
 
   await crNFT.wait();
 
-  const operatorApprove = await maaketDeployed
+  //approve operator address for transfer for ERC721 Maaket Contract
+  await maaketDeployed
     .connect(randSigner)
     .setApprovalForAll(rafDeployed.address, true);
 
-  await operatorApprove.wait();
+  //approve operator address for transfer for ERC1155 Maaket Contract
+  await erc1155Deployed
+    .connect(randSigner)
+    .setApprovalForAll(rafDeployed.address, true);
 
+  //randsigner transfer token from origin erc721 maaket contract to rafflux
   var crRaffle = await rafDeployed
     .connect(randSigner)
     .createRaffle(
@@ -63,6 +83,42 @@ async function startRafflux() {
       { value: hre.ethers.utils.parseEther("0.02") }
     );
   console.log("Ticket Created by: ", crRaffle.from);
+
+  //get balance of raffle contract erc721 maaket
+  console.log(
+    "Bal ERC721 NFTs of Rafflux Contract: ",
+    hre.ethers.BigNumber.from(
+      await maaketDeployed.balanceOf(rafDeployed.address)
+    ).toNumber()
+  );
+
+  //randsigner transfer token from origin erc1155 maaket contract to rafflux
+  var crRaffle2 = await rafDeployed
+    .connect(randSigner)
+    .createRaffle(
+      1,
+      0,
+      erc1155MaaketAddr,
+      hre.ethers.utils.parseEther("0.02"),
+      { value: hre.ethers.utils.parseEther("0.02") }
+    );
+  console.log("2nd Ticket Created by: ", crRaffle2.from);
+
+  //get balance of raffle contract ERC1155 Maaket
+  console.log(
+    "Bal ERC1155 NFTs of Rafflux Contract: ",
+    hre.ethers.BigNumber.from(
+      await erc1155Deployed.balanceOf(rafDeployed.address, 0)
+    ).toNumber()
+  );
+
+  //check user NFT balances
+  console.log(
+    "New Balance of Deployer (aka token owner): ",
+    hre.ethers.BigNumber.from(
+      await erc1155Deployed.balanceOf(randSigner.address, 0)
+    ).toNumber()
+  );
 }
 
 async function runDeployer() {

@@ -34,7 +34,7 @@ contract Rafflux is RaffluxStorage {
     if (_type == assetType.ERC721) {
       erc721contract.safeTransferFrom(_seller, address(this), _assetID);
     } else if (_type == assetType.ERC1155) { 
-      erc1155contract.safeTransferFrom(_seller, address(this), _assetID, 1, "");
+      erc1155contract.safeTransferFrom(_seller, address(this), _assetID, 2, "");
     }
   }
 
@@ -43,6 +43,7 @@ contract Rafflux is RaffluxStorage {
     function createRaffle(assetType _type, uint _id, address _contractAddr, uint _participateFee) public payable{
         require(msg.value == raffleSellersEntryFee, "insufficient funds");
 
+        //set respective contract addresses
         erc721contract = IERC721(_contractAddr);
         erc1155contract = IERC1155(_contractAddr);
 
