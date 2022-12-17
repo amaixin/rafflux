@@ -6,14 +6,18 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "hardhat/console.sol";
 import "./RaffluxStorage.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+// import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+// import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+// import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 
-contract Rafflux is RaffluxStorage, IERC721Receiver {
+contract Rafflux is RaffluxStorage {
+  // IERC721Receiver ierc1155Receiver;
+
   address public erc721contractAddr;
-  IERC721 erc721contract = IERC721(erc721contractAddr);
-  IERC1155 erc1155contract = IERC1155(erc721contractAddr);
-  ERC721 token;
+  address public erc1155contractAddr;
+  IERC721 erc721contract ;
+  IERC1155 erc1155contract;
+  // ERC721 token;
 
     enum assetType {
         ERC721,
@@ -38,14 +42,24 @@ contract Rafflux is RaffluxStorage, IERC721Receiver {
 
     function createRaffle(assetType _type, uint _id, address _contractAddr, uint _participateFee) public payable{
         require(msg.value == raffleSellersEntryFee, "insufficient funds");
+
         erc721contract = IERC721(_contractAddr);
+        erc1155contract = IERC1155(_contractAddr);
+
         minRaffleParticipationFee = _participateFee;
+
         _transferFromSeller(_type, msg.sender, _id);
         idToRaffleItem[_id] = RaffleItem(_id, msg.sender, block.timestamp);
     }
 
-    function onERC721Received( address operator, address from, uint256 tokenId, bytes calldata data ) public override returns (bytes4) {
+    function onERC721Received( address operator, address from, uint256 tokenId, bytes calldata data ) public pure returns (bytes4) {
             return this.onERC721Received.selector;
+             
+        }
+
+    function onERC1155Received( address operator, address from, uint256 tokenId, uint256 value, bytes calldata data ) public pure returns (bytes4) {
+            return this.onERC1155Received.selector;
+             
         }
         
     function transferBal( address payable _to, uint amt) public {
@@ -56,6 +70,9 @@ contract Rafflux is RaffluxStorage, IERC721Receiver {
     function getBal(address _add) public view returns (uint){
         return _add.balance;
     }
+
+
+
 
 
 }

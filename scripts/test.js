@@ -3,6 +3,25 @@ async function startRafflux() {
   console.log("Owner Address: ", owner.address);
   console.log("RandomSigner Address: ", randSigner.address);
 
+  //Deploy ERC1155 contract
+  const erc1155Con = await hre.ethers.getContractFactory("MaaketErc1155");
+  const erc1155Deployed = await erc1155Con.deploy();
+  const initNft = await erc1155Deployed.createNft();
+
+  await initNft.wait();
+  console.log("Erc1155 Contract: ", await erc1155Deployed.address);
+  console.log(
+    "Balance of Deployer: ",
+    hre.ethers.BigNumber.isBigNumber(
+      await erc1155Deployed.balanceOf(owner.address, 0)
+    ),
+    await erc1155Deployed.balanceOf(owner.address, 0),
+    " It is, but converted to a number, which is: ",
+    hre.ethers.BigNumber.from(
+      await erc1155Deployed.balanceOf(owner.address, 0)
+    ).toNumber()
+  );
+
   //Deploy Rafflux contracts
   const rafContract = await hre.ethers.getContractFactory("Rafflux");
   const rafDeployed = await rafContract.deploy();
@@ -43,7 +62,7 @@ async function startRafflux() {
       hre.ethers.utils.parseEther("0.02"),
       { value: hre.ethers.utils.parseEther("0.02") }
     );
-  console.log("Ticket Created: ", crRaffle.to);
+  console.log("Ticket Created by: ", crRaffle.from);
 }
 
 async function runDeployer() {
