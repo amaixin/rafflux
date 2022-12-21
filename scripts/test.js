@@ -121,16 +121,21 @@ async function startRafflux() {
   );
 
   //Return Raffle Items
-  const getStoredItems = await rafDeployed.returnRaffleItems(1);
+  const getStoredItems = await rafDeployed.returnRaffleItem(1);
   console.log(
     "Get specific raffle item by ID - ID: ",
     hre.ethers.BigNumber.from(getStoredItems.id).toNumber()
   );
   console.log("Address: ", getStoredItems.owner);
-  console.log(
-    "Date: ",
-    hre.ethers.BigNumber.from(getStoredItems.date).toNumber()
-  );
+
+  //Get Date
+  const eDate = hre.ethers.BigNumber.from(getStoredItems.date).toNumber();
+  const getDate = new Date(eDate * 1000);
+  console.log("Date: ", getDate.toLocaleString());
+
+  //Return all raffle items
+  const getAllRaffItems = await rafDeployed.returnAllRaffleItems();
+  console.log("All Raffle Items: ", getAllRaffItems);
 }
 
 async function runDeployer() {

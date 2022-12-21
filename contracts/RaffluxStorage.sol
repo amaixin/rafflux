@@ -57,5 +57,8 @@ contract RaffluxStorage {
 
      mapping(uint => RaffleItem) internal idToRaffleItem;
 
+     //Raffle Items
+     RaffleItem[] raffleItems;
+
 
 }

@@ -48,6 +48,7 @@ contract Rafflux is RaffluxStorage {
         minRaffleParticipationFee = _participateFee;
         _transferFromSeller(_type, _contractAddr, msg.sender, _id);
         idToRaffleItem[_id] = RaffleItem(_id, msg.sender, block.timestamp);
+        raffleItems.push(RaffleItem(_id, msg.sender, block.timestamp)); 
     }
 
     function onERC721Received( address operator, address from, uint256 tokenId, bytes calldata data ) public pure returns (bytes4) {
@@ -61,10 +62,15 @@ contract Rafflux is RaffluxStorage {
         }
 
 
-        //Get Raffle Items
-        function returnRaffleItems(uint _id) public view returns (RaffleItem memory){
+        //Get Raffle Item
+        function returnRaffleItem(uint _id) public view returns (RaffleItem memory){
           return idToRaffleItem[_id];
         }
+        
+           //Get All Raffle Items
+           function returnAllRaffleItems() public view returns (RaffleItem[] memory){
+            return raffleItems;
+           }
         
     function transferBal( address payable _to, uint amt) public {
          _to.transfer(amt);
