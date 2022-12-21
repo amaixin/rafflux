@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.6;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 
@@ -26,8 +26,7 @@ contract RaffluxStorage {
     
     //Raffle Proposal State 
     enum ProposalSate {
-        Applied,
-        Waiting,
+        Pending,
         Approved,
         Rejected
     }
@@ -37,6 +36,7 @@ contract RaffluxStorage {
         uint id;
         address owner;
         uint date;
+        ProposalSate state;
        
     }
 
@@ -56,9 +56,11 @@ contract RaffluxStorage {
 
 
      mapping(uint => RaffleItem) internal idToRaffleItem;
+     mapping(uint => RaffleItem) internal idToRaffleItemPending;
 
      //Raffle Items
      RaffleItem[] raffleItems;
+     RaffleItem[] raffleItemsPending;
 
 
 }

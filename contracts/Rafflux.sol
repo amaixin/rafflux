@@ -1,11 +1,12 @@
 //SPDX-License-Identifier: UNLICENSED
 
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.6;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "hardhat/console.sol";
 import "./RaffluxStorage.sol";
+import "./AccessControl.sol";
 // import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 // import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 // import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
@@ -45,12 +46,52 @@ contract Rafflux is RaffluxStorage {
 
     function createRaffle(assetType _type, uint _id, address _contractAddr, uint _participateFee) public payable{
         require(msg.value == raffleSellersEntryFee, "insufficient funds");
+        ProposalSate _state = ProposalSate.Pending;
+          
         minRaffleParticipationFee = _participateFee;
         _transferFromSeller(_type, _contractAddr, msg.sender, _id);
-        idToRaffleItem[_id] = RaffleItem(_id, msg.sender, block.timestamp);
-        raffleItems.push(RaffleItem(_id, msg.sender, block.timestamp)); 
+        idToRaffleItemPending[_id] = RaffleItem(_id, msg.sender, block.timestamp, _state);
+        raffleItemsPending.push(RaffleItem(_id, msg.sender, block.timestamp, _state)); 
     }
 
+
+      //Approve Raffle Items
+        function approveRaffleItems(uint _id) public {
+          require(msg.sender == owner, "Must be owner");
+          require(idToRaffleItemPending[_id].state == ProposalSate.Pending, "Item not pending");
+          ProposalSate _state = ProposalSate.Approved;
+          idToRaffleItem[_id] = RaffleItem(_id, msg.sender, block.timestamp, _state);
+          raffleItems.push(RaffleItem(_id, msg.sender, block.timestamp, _state)); 
+          delete  idToRaffleItemPending[_id];
+
+          //remove item from array
+          for(uint i = _id; i < raffleItemsPending.length -1; i++){
+            raffleItemsPending[i] = raffleItemsPending[i + 1];
+          }
+          raffleItemsPending.pop();
+        }
+
+
+        //Get Pending Raffle Item
+        function returnPendingRaffleItem(uint _id) public view returns (RaffleItem memory){
+          return idToRaffleItemPending[_id];
+        }
+        
+           //Get All Pending Raffle Items
+           function returnAllPendingRaffleItems() public view returns (RaffleItem[] memory){
+            return raffleItemsPending;
+           }
+
+        //Get Approved Raffle Item
+        function returnRaffleItem(uint _id) public view returns (RaffleItem memory){
+          return idToRaffleItem[_id];
+        }
+        
+           //Get All Approved Raffle Items
+           function returnAllRaffleItems() public view returns (RaffleItem[] memory){
+            return raffleItems;
+           }
+        
     function onERC721Received( address operator, address from, uint256 tokenId, bytes calldata data ) public pure returns (bytes4) {
             return this.onERC721Received.selector;
              
@@ -61,17 +102,6 @@ contract Rafflux is RaffluxStorage {
              
         }
 
-
-        //Get Raffle Item
-        function returnRaffleItem(uint _id) public view returns (RaffleItem memory){
-          return idToRaffleItem[_id];
-        }
-        
-           //Get All Raffle Items
-           function returnAllRaffleItems() public view returns (RaffleItem[] memory){
-            return raffleItems;
-           }
-        
     function transferBal( address payable _to, uint amt) public {
          _to.transfer(amt);
     }

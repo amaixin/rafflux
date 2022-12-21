@@ -121,21 +121,42 @@ async function startRafflux() {
   );
 
   //Return Raffle Items
-  const getStoredItems = await rafDeployed.returnRaffleItem(1);
+  const getStoredItemsPending = await rafDeployed.returnPendingRaffleItem(0);
   console.log(
     "Get specific raffle item by ID - ID: ",
-    hre.ethers.BigNumber.from(getStoredItems.id).toNumber()
+    hre.ethers.BigNumber.from(getStoredItemsPending.id).toNumber()
   );
-  console.log("Address: ", getStoredItems.owner);
+  console.log("Address: ", getStoredItemsPending.owner);
 
   //Get Date
-  const eDate = hre.ethers.BigNumber.from(getStoredItems.date).toNumber();
+  const eDate = hre.ethers.BigNumber.from(
+    getStoredItemsPending.date
+  ).toNumber();
   const getDate = new Date(eDate * 1000);
   console.log("Date: ", getDate.toLocaleString());
+  console.log("Proposal State: ", getStoredItemsPending.state);
 
   //Return all raffle items
-  const getAllRaffItems = await rafDeployed.returnAllRaffleItems();
-  console.log("All Raffle Items: ", getAllRaffItems);
+  const getAllPendingRaffItems =
+    await rafDeployed.returnAllPendingRaffleItems();
+  console.log(
+    "All Pending Raffle Items: ",
+    getAllPendingRaffItems,
+    getAllPendingRaffItems.length
+  );
+
+  //approve items
+  const approveItems = await rafDeployed.approveRaffleItems(0);
+  await approveItems.wait();
+
+  //return all pending items again
+  const getAllPendingRaffItems2 =
+    await rafDeployed.returnAllPendingRaffleItems();
+  console.log(
+    "New Pending Raffle Items: ",
+    getAllPendingRaffItems2,
+    getAllPendingRaffItems2.length
+  );
 }
 
 async function runDeployer() {
