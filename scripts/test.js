@@ -119,6 +119,18 @@ async function startRafflux() {
       await erc1155Deployed.balanceOf(randSigner.address, 0)
     ).toNumber()
   );
+
+  //Return Raffle Items
+  const getStoredItems = await rafDeployed.returnRaffleItems(1);
+  console.log(
+    "Get specific raffle item by ID - ID: ",
+    hre.ethers.BigNumber.from(getStoredItems.id).toNumber()
+  );
+  console.log("Address: ", getStoredItems.owner);
+  console.log(
+    "Date: ",
+    hre.ethers.BigNumber.from(getStoredItems.date).toNumber()
+  );
 }
 
 async function runDeployer() {

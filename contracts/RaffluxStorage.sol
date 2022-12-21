@@ -55,7 +55,7 @@ contract RaffluxStorage {
     }
 
 
-     mapping(uint => RaffleItem) idToRaffleItem;
+     mapping(uint => RaffleItem) internal idToRaffleItem;
 
 
 }
