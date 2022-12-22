@@ -142,6 +142,7 @@ async function startRafflux() {
   console.log(
     "All Pending Raffle Items: ",
     getAllPendingRaffItems,
+    "Items length: ",
     getAllPendingRaffItems.length
   );
 
@@ -155,8 +156,14 @@ async function startRafflux() {
   console.log(
     "New Pending Raffle Items: ",
     getAllPendingRaffItems2,
+    "Items length: ",
     getAllPendingRaffItems2.length
   );
+
+  //reject items on pending
+  const rejPendingitems = await rafDeployed.rejectPendingRaffleItems(0, {
+    value: hre.ethers.utils.parseEther("0.02"),
+  });
 }
 
 async function runDeployer() {

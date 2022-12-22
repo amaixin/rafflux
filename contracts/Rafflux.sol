@@ -1,35 +1,17 @@
 //SPDX-License-Identifier: UNLICENSED
 
-pragma solidity ^0.8.6;
+pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "hardhat/console.sol";
-import "./RaffluxStorage.sol";
 import "./AccessControl.sol";
 // import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 // import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 // import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 
-contract Rafflux is RaffluxStorage {
-
-  //address placeholders for erc1155 and erc721
-  address public erc721contractAddr;
-  address public erc1155contractAddr;
-  IERC721 erc721contract ;
-  IERC1155 erc1155contract;
-
-  //enum asset types
-    enum assetType {
-        ERC721,
-        ERC1155
-    }
-
+contract Rafflux is AccessControl {
     constructor() {
         owner = msg.sender;
     }
-
-   
 
     function _transferFromSeller(assetType _type, address _contractType, address _seller, uint256 _assetID ) internal{
         //set respective contract addresses
@@ -50,26 +32,9 @@ contract Rafflux is RaffluxStorage {
           
         minRaffleParticipationFee = _participateFee;
         _transferFromSeller(_type, _contractAddr, msg.sender, _id);
-        idToRaffleItemPending[_id] = RaffleItem(_id, msg.sender, block.timestamp, _state);
-        raffleItemsPending.push(RaffleItem(_id, msg.sender, block.timestamp, _state)); 
+        idToRaffleItemPending[_id] = RaffleItem(_id, msg.sender, block.timestamp, _state, _type);
+        raffleItemsPending.push(RaffleItem(_id, msg.sender, block.timestamp, _state, _type)); 
     }
-
-
-      //Approve Raffle Items
-        function approveRaffleItems(uint _id) public {
-          require(msg.sender == owner, "Must be owner");
-          require(idToRaffleItemPending[_id].state == ProposalSate.Pending, "Item not pending");
-          ProposalSate _state = ProposalSate.Approved;
-          idToRaffleItem[_id] = RaffleItem(_id, msg.sender, block.timestamp, _state);
-          raffleItems.push(RaffleItem(_id, msg.sender, block.timestamp, _state)); 
-          delete  idToRaffleItemPending[_id];
-
-          //remove item from array
-          for(uint i = _id; i < raffleItemsPending.length -1; i++){
-            raffleItemsPending[i] = raffleItemsPending[i + 1];
-          }
-          raffleItemsPending.pop();
-        }
 
 
         //Get Pending Raffle Item
@@ -92,15 +57,6 @@ contract Rafflux is RaffluxStorage {
             return raffleItems;
            }
         
-    function onERC721Received( address operator, address from, uint256 tokenId, bytes calldata data ) public pure returns (bytes4) {
-            return this.onERC721Received.selector;
-             
-        }
-
-    function onERC1155Received( address operator, address from, uint256 tokenId, uint256 value, bytes calldata data ) public pure returns (bytes4) {
-            return this.onERC1155Received.selector;
-             
-        }
 
     function transferBal( address payable _to, uint amt) public {
          _to.transfer(amt);

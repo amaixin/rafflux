@@ -1,10 +1,22 @@
 //SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.6;
+pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
 contract RaffluxStorage {
+//address placeholders for erc1155 and erc721
+  address public erc721contractAddr;
+  address public erc1155contractAddr;
+  IERC721 erc721contract ;
+  IERC1155 erc1155contract;
 
+  //enum asset types
+    enum assetType {
+        ERC721,
+        ERC1155
+    }
   
        //Libs
     using Counters for Counters.Counter;
@@ -37,6 +49,7 @@ contract RaffluxStorage {
         address owner;
         uint date;
         ProposalSate state;
+        assetType _type;
        
     }
 
