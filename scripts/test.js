@@ -159,11 +159,36 @@ async function startRafflux() {
     "Items length: ",
     getAllPendingRaffItems2.length
   );
-
   //reject items on pending
-  const rejPendingitems = await rafDeployed.rejectPendingRaffleItems(0, {
+  const rejPendingitems = await rafDeployed.rejPenRafItems(0, {
     value: hre.ethers.utils.parseEther("0.02"),
   });
+
+  await rejPendingitems.wait();
+
+  //return all pending items again
+  const getAllPendingRaffItems3 =
+    await rafDeployed.returnAllPendingRaffleItems();
+  console.log(
+    "New Pending Raffle Items2: ",
+    getAllPendingRaffItems3,
+    "Items length: ",
+    getAllPendingRaffItems3.length
+  );
+
+  //check user NFT balances
+
+  const get1155NewBal = hre.ethers.BigNumber.from(
+    await erc1155Deployed.balanceOf(randSigner.address, 0)
+  ).toNumber();
+  console.log("New Balance of Deployer (aka token owner):  ", get1155NewBal);
+
+  //get balance of raffle contract ERC1155 Maaket
+
+  const newERC1155 = hre.ethers.BigNumber.from(
+    await erc1155Deployed.balanceOf(rafDeployed.address, 0)
+  ).toNumber();
+  console.log("Bal ERC1155 NFTs of Rafflux Contract - new: ", newERC1155);
 }
 
 async function runDeployer() {

@@ -5,12 +5,13 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
-contract RaffluxStorage {
-//address placeholders for erc1155 and erc721
-  address public erc721contractAddr;
-  address public erc1155contractAddr;
-  IERC721 erc721contract ;
+contract RaffluxStorage{
+  //address placeholders for erc1155 and erc721
+  // address public erc721contractAddr;
+  // address public erc1155contractAddr;
+  IERC721 erc721contract;
   IERC1155 erc1155contract;
+
 
   //enum asset types
     enum assetType {

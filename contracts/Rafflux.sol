@@ -8,15 +8,15 @@ import "./AccessControl.sol";
 // import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 // import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 
-contract Rafflux is AccessControl {
+contract Rafflux is AccessControl{
     constructor() {
         owner = msg.sender;
     }
 
-    function _transferFromSeller(assetType _type, address _contractType, address _seller, uint256 _assetID ) internal{
+    function _transferFromSeller(assetType _type, address assetContract, address _seller, uint256 _assetID ) internal{
         //set respective contract addresses
-        erc721contract = IERC721(_contractType);
-        erc1155contract = IERC1155(_contractType);
+        erc721contract = IERC721(assetContract);
+        erc1155contract = IERC1155(assetContract);
     if (_type == assetType.ERC721) {
       erc721contract.safeTransferFrom(_seller, address(this), _assetID);
     } else if (_type == assetType.ERC1155) { 
@@ -67,7 +67,16 @@ contract Rafflux is AccessControl {
         return _add.balance;
     }
 
+    
+      function onERC721Received( address operator, address from, uint256 tokenId, bytes calldata data ) public pure returns (bytes4) {
+            return this.onERC721Received.selector;
+             
+        }
 
+      function onERC1155Received( address operator, address from, uint256 tokenId, uint256 value, bytes calldata data ) public pure returns (bytes4) {
+            return this.onERC1155Received.selector;
+             
+        }    
 
 
 

@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract MaaketErc1155 is ERC1155 {
+
 address private owner;
 using Counters for Counters.Counter;
 
@@ -26,8 +27,8 @@ function createNft() public payable{
 }
 
 
-  function onERC1155Received( address operator, address from, uint256 tokenId, uint256 value, bytes calldata data ) public pure returns (bytes4) {
-            return this.onERC1155Received.selector;
+  // function onERC1155Received( address operator, address from, uint256 tokenId, uint256 value, bytes calldata data ) public pure returns (bytes4) {
+  //           return this.onERC1155Received.selector;
              
-        }
+  //       }
 }
